@@ -1,0 +1,47 @@
+repos:
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v2.5.0"
+    hooks:
+
+      # Проверяет наличие переноса строки в конце всех текстовых файлов.
+      - id: end-of-file-fixer
+
+      # Предупреждает о добавлении больших файлов в Git.
+      - id: check-added-large-files
+
+      # Предупреждает о сохранении файлов с UTF-8 BOM.
+      - id: check-byte-order-marker
+
+      # Предотвращает сохранение приватных ключей.
+      - id: detect-private-key
+
+      # Проверяет, что файлы, которые мы собираемся сохранять, как минимум валидный Python.
+      - id: check-ast
+
+  - repo: local
+    hooks:
+
+      # Автоматического изменения порядка импортов.
+      - id: isort
+        name: isort
+        entry: isort
+        language: system
+        types: [ python ]
+        args: [--settings-path=pyproject.toml]
+
+      # Форматирование кода.
+      - id: black
+        name: black
+        entry: black
+        language: system
+        types: [python]
+        args: [--config=pyproject.toml]
+
+      # Линтер.
+      - id: flake8
+        name: flake8
+        entry: flake8
+        language: system
+        types: [python]
+        args: [--config=flake8]
