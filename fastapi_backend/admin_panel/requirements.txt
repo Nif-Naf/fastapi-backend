@@ -1,0 +1,2 @@
+FastAPI==0.109.2
+fastapi-admin==1.0.4

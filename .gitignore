@@ -1,0 +1,13 @@
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+
+# Environments
+fastapi_backend/core/envs/.env
+.venv
+duty.py
+
+# Testing
+tests/integration/test.db

@@ -1,0 +1,86 @@
+services:
+
+  admin_panel:
+    build:
+      context: .
+      dockerfile: fastapi_backend/admin_panel/Dockerfile
+    container_name: admin_panel
+    ports:
+      - "8001:${PORT}"
+    env_file:
+      - ./fastapi_backend/core/envs/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      dockerfile: fastapi_backend/backend/Dockerfile
+    container_name: backend
+    ports:
+      - "8000:${PORT}"
+    env_file:
+      - ./fastapi_backend/core/envs/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  smtp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smtp
+    environment:
+      - MAIL_USERNAME=your_email@gmail.com
+      - MAIL_PASSWORD=your_password_or_api_key
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672" # для доступа к веб-интерфейсу RabbitMQ
+
+  postgres:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_HOST: $DB_HOST
+      POSTGRES_PORT: $DB_PORT
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - ./fastapi_backend/core/envs/.env
+    volumes:
+      - ./postgresql/dumps:/project/dumps
+      - ./postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5433:${DB_PORT}"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: always
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    hostname: redis
+    command: redis-server --save 20 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: always
+
