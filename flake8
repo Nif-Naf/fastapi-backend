@@ -44,6 +44,8 @@ ignore =
     ANN001,
     ANN003,
     ANN101,
+    # Missing type annotation for cls in classmethod
+    ANN102,
     FI18,
     ANN201,
     ANN204,
