@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "simple": {
+      "format": "%(levelname)s - %(asctime)s: %(message)s",
+      "datefmt": "%d-%m-%YT%H:%M:%S%z"
+    },
+    "without_time": {
+      "format": "%(levelname)s - %(module)s - L%(lineno)d: %(message)s"
+    },
+    "full": {
+      "format": "%(levelname)s - %(module)s - L%(lineno)d - %(asctime)s: %(message)s",
+      "datefmt": "%d-%m-%YT%H:%M:%S%z"
+    }
+  },
+  "handlers": {
+    "console": {
+      "class": "logging.StreamHandler",
+      "level": "INFO",
+      "formatter": "simple"
+    },
+    "auth_handler": {
+      "class": "logging.FileHandler",
+      "level": "DEBUG",
+      "formatter": "simple",
+      "filename": null,
+      "mode": "a"
+    },
+    "dev_handler": {
+      "class": "logging.StreamHandler",
+      "level": "DEBUG",
+      "formatter": "without_time"
+    },
+    "prod_handler": {
+      "class": "logging.StreamHandler",
+      "level": "DEBUG",
+      "formatter": "full"
+    },
+    "warn_handler": {
+      "class": "logging.FileHandler",
+      "level": "DEBUG",
+      "formatter": "full",
+      "filename": null,
+      "mode": "a"
+    }
+  },
+  "loggers": {
+    "auth": {
+      "level": "INFO",
+      "handlers": ["auth_handler"]
+    },
+    "dev": {
+      "level": "DEBUG",
+      "handlers": ["dev_handler"]
+    },
+    "prod": {
+      "level": "INFO",
+      "handlers": ["prod_handler"]
+    },
+    "warn": {
+      "level": "INFO",
+      "handlers": ["warn_handler"]
+    }
+  }
+}
