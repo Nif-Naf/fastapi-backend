@@ -4,6 +4,8 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
+from logger_config import LogConfig
+
 # Check requirements .env file.
 env_conf = load_dotenv()
 if not env_conf:
@@ -33,3 +35,4 @@ if __name__ == "__main__":
         log_level=LOG_LEVEL,
         reload=RELOAD,
     )
+    LogConfig.init_logging_conf()

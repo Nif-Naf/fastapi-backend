@@ -1,3 +1,5 @@
+from logging.config import dictConfig
+
 from pydantic import BaseModel
 
 
@@ -46,3 +48,8 @@ class LogConfig(BaseModel):
         "development": {"handlers": ["default"], "level": "DEBUG"},
         "testing": {"handlers": ["test"], "level": "DEBUG"},
     }
+
+    @classmethod
+    def init_logging_conf(cls) -> None:
+        """Инициализация конфигурации."""
+        dictConfig(cls().dict())
