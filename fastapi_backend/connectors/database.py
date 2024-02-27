@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from fastapi_backend.models.base import BaseModel
 from settings import MAIN_SETTINGS_DB, SESSION_SETTINGS
 
 logger = logging.getLogger("development")
@@ -31,12 +32,12 @@ class SQLDatabaseConnector:
         return create_engine(**kwargs)
 
     def create_tables(self) -> None:
-        # logger_information.info("Creating tables")
-        raise NotImplementedError
+        logger_information.info("Creating tables")
+        BaseModel.metadata.create_all(bind=self.engine)
 
     def drop_tables(self) -> None:
-        # logger_information.info("Drop tables")
-        raise NotImplementedError
+        logger_information.info("Drop tables")
+        BaseModel.metadata.drop_all(bind=self.engine)
 
 
 class PostgresDBConnector(SQLDatabaseConnector):
