@@ -1,22 +1,8 @@
-import os
-
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from logger_config import LogConfig
-
-# Check requirements .env file.
-env_conf = load_dotenv()
-if not env_conf:
-    raise FileNotFoundError("File .env not found.")
-
-# Initialization all variables.
-HOST = os.getenv("FA_HOST")
-PORT = int(os.getenv("FA_PORT"))
-DEBUG = bool(os.getenv("FA_DEBUG"))
-LOG_LEVEL = os.getenv("FA_LOG_LEVEL")
-RELOAD = bool(os.getenv("FA_AUTO_RELOAD"))
+from settings import DEBUG, HOST, LOG_LEVEL, PORT, RELOAD
 
 # Create instance FastAPI.
 app = FastAPI(debug=DEBUG)
