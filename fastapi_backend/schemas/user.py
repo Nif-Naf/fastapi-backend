@@ -6,10 +6,19 @@ logger = logging.getLogger("development")
 
 
 class UserSchema(BaseSchema):
-    """Схема пользователя."""
+    """Схема пользователя без первичного ключа.
+    Запись которой нет в БД.
+    """
 
-    id: int
     name: str
     username: str
     email: str
     password: str
+
+
+class UserWithPKScheme(UserSchema):
+    """Схема пользователя с первичным ключом.
+    Запись которой уже в БД.
+    """
+
+    id: str
