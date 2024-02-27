@@ -1,11 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
 
-from logger_config import LogConfig
+from fastapi_backend.utils.lifespan import lifespan
 from settings import DEBUG, HOST, LOG_LEVEL, PORT, RELOAD
 
 # Create instance FastAPI.
-app = FastAPI(debug=DEBUG)
+app = FastAPI(
+    debug=DEBUG,
+    lifespan=lifespan,
+)
 
 
 @app.get(path="/")
@@ -21,4 +24,3 @@ if __name__ == "__main__":
         log_level=LOG_LEVEL,
         reload=RELOAD,
     )
-    LogConfig.init_logging_conf()
