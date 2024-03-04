@@ -11,8 +11,7 @@ logger = logging.getLogger("development")
 @asynccontextmanager
 async def lifespan(app):
     LogConfig.init_logging_conf()
-    if DEBUG:
-        connector = PostgresDBConnector()
-        connector.create_tables()
+    connector = PostgresDBConnector()
+    connector.create_tables() if DEBUG else ...
     yield
-    ...
+    # connector.drop_tables() if DEBUG else ...
