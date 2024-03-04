@@ -16,3 +16,6 @@ class UserModel(BaseModel):
     username: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
+
+    def __str__(self):
+        return f"UserModel object. ID: {self.id}"
