@@ -1,13 +1,22 @@
 import logging
 
 from fastapi_backend.schemas.base import BaseSchema
+from fastapi_backend.schemas.token import Token
 
 logger = logging.getLogger("development")
 
 
-class ResponseSchema(BaseSchema):
+class BaseResponseSchema(BaseSchema):
+    message: str | None
+
+
+class ResponseSchema(BaseResponseSchema):
     """Схема стандартного ответа."""
 
-    # Валидация. Один из аргументов обязателен.
     data: dict | None
-    message: str | None
+
+
+class TokenResponseSchema(BaseResponseSchema):
+    """Схема стандартного ответа."""
+
+    data: Token | None

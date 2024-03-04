@@ -21,4 +21,4 @@ class UserWithPKScheme(UserSchema):
     Запись которой уже в БД.
     """
 
-    id: str
+    id: int
