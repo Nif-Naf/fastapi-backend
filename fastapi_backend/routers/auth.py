@@ -9,31 +9,14 @@ from starlette.status import HTTP_201_CREATED
 from fastapi_backend.schemas.response import ResponseSchema
 from fastapi_backend.schemas.token import Token
 from fastapi_backend.schemas.user import UserSchema
-from fastapi_backend.services.auth import (
-    authenticate_user,
-    authorization_user,
-    check_email_user,
-    create_token_for_user,
-)
-from settings import AUTH_PREFIX
+from fastapi_backend.services.auth import AuthService
+from settings import VER_API_ONE
 
 logger = logging.getLogger("development")
 
 auth_router = APIRouter(
-    prefix=AUTH_PREFIX,
+    prefix=VER_API_ONE + "auth",
 )
-
-
-@auth_router.get(
-    path="/this_email_free/{email}",
-    tags=[
-        "authorization",
-    ],
-)
-def is_unique_email(email) -> ResponseSchema:
-    """Проверка на уникальность переданного электронного адреса в БД."""
-    response = check_email_user(email)
-    return response
 
 
 @auth_router.post(
@@ -43,9 +26,10 @@ def is_unique_email(email) -> ResponseSchema:
     ],
     status_code=HTTP_201_CREATED,
 )
-def sign_in(data: UserSchema) -> ResponseSchema:
-    """Создание пользователя и выдача ему прав."""
-    response = authorization_user(data)
+def sign_up(data: UserSchema) -> ResponseSchema:
+    """Регистрация."""
+    service = AuthService()
+    response = service.authorization(data)
     return response
 
 
@@ -54,12 +38,14 @@ def sign_in(data: UserSchema) -> ResponseSchema:
     tags=[
         "authentication",
     ],
-    status_code=HTTP_201_CREATED,
 )
-def login(
+def sign_in(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
-    """Аутентификация пользователя по паролю и почте."""
-    user = authenticate_user(form_data.username, form_data.password)
-    response = create_token_for_user(user.email)
+    """Вход в систему."""
+    service = AuthService()
+    email: str = form_data.username
+    password: str = form_data.password
+    user = service.credentials_authentication(email, password)
+    response = service.create_token(user.email)
     return response

@@ -1,7 +1,6 @@
 import logging
 
 from sqlalchemy import create_engine
-from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from fastapi_backend.models.base import BaseModel
@@ -24,12 +23,8 @@ class SQLDatabaseConnector:
         self.engine = create_engine(**kwargs)
 
     @property
-    def new_session(self) -> sessionmaker[Session]:
+    def session_factory(self) -> sessionmaker[Session]:
         return sessionmaker(self.engine, **SESSION_SETTINGS)
-
-    @staticmethod
-    def create_engine(**kwargs) -> Engine:
-        return create_engine(**kwargs)
 
     def create_tables(self) -> None:
         logger_information.info("Creating tables")

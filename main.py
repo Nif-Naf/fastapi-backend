@@ -3,6 +3,7 @@ from fastapi import FastAPI
 
 from fastapi_backend.routers.auth import auth_router
 from fastapi_backend.routers.email import email_router
+from fastapi_backend.routers.user import user_router
 from fastapi_backend.utils.lifespan import lifespan
 from settings import DEBUG, HOST, LOG_LEVEL, PORT, RELOAD
 
@@ -13,6 +14,7 @@ app = FastAPI(
 )
 app.include_router(auth_router)
 app.include_router(email_router)
+app.include_router(user_router)
 
 if __name__ == "__main__":
     uvicorn.run(

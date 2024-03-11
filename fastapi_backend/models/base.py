@@ -1,14 +1,18 @@
-import logging
+from datetime import datetime
+from typing import Annotated
 
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, mapped_column
+from sqlalchemy.sql.functions import func
 
-logger = logging.getLogger("development")
 
-
+# Base model.
 class BaseModel(DeclarativeBase):
     """Базовая модель."""
 
-    # def __str__(self):
-    #     table: str = self.__tablename__
-    #     model_name = " ".join(table.split("_")) if "_" in table else table
-    #     return f"Object {model_name.capitalize()}. ID: {self.id}"
+    ...
+
+
+# Data type.
+pk = Annotated[int, mapped_column(primary_key=True)]
+created_at = Annotated[datetime, mapped_column(server_default=func.now())]
+updated_at = Annotated[datetime, mapped_column(onupdate=func.now)]

@@ -16,9 +16,12 @@ DEBUG = bool(os.getenv("DEBUG"))
 LOG_LEVEL = os.getenv("LOG_LEVEL")
 RELOAD = bool(os.getenv("AUTO_RELOAD"))
 
+# API setting.
+VER_API_ONE = "/api/v1/"
+VER_API_TWO = "/api/v2/"
+
 # Auth settings.
-AUTH_PREFIX = "/api/v1/auth"
-OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=AUTH_PREFIX + "/login")
+OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=VER_API_ONE + "auth/login")
 PASSWORD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
