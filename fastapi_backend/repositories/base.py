@@ -14,18 +14,19 @@ class BaseAbstractRepository(ABC):
     MAPPED_MODEL = {
         "UserModel": UserModel,
     }
-    MAPPED_SCHEMA = {
-        UserModel: UserWithPKScheme,
-    }
+    # MAPPED_SCHEMA = {
+    #     UserModel: UserWithPKScheme,
+    # }
 
     @classmethod
     def get_model(cls, model_name: str) -> ModelType:
         """Получить модель по ее имени."""
         return cls.MAPPED_MODEL[model_name]
 
-    @classmethod
-    def converting(cls, model: ModelType) -> SchemaType:
-        """Конвертировать модель в схему."""
-        get_scheme = cls.MAPPED_SCHEMA[model.__name__]
-        filling_schema = get_scheme.model_validate(**model)
-        return filling_schema
+    # @classmethod
+    # def converting(cls, model: ModelType) -> SchemaType:
+    #     """Конвертировать модель в схему."""
+    #     print(model)
+    #     get_scheme = cls.MAPPED_SCHEMA[model]
+    #     filling_schema = get_scheme.model_validate(**model)
+    #     return filling_schema

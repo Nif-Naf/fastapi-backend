@@ -5,6 +5,7 @@ from sqlalchemy.orm.base import Mapped
 
 from fastapi_backend.models import base as data_type
 from fastapi_backend.models.base import BaseModel
+from fastapi_backend.schemas.user import UserWithPKScheme
 
 logger = logging.getLogger("development")
 
@@ -23,3 +24,8 @@ class UserModel(BaseModel):
 
     def __str__(self):
         return f"UserModel object. ID: {self.id}"
+
+    def to_schema(self) -> UserWithPKScheme:
+        """Получить из модели схему."""
+        schema = super().convert(UserWithPKScheme)
+        return schema

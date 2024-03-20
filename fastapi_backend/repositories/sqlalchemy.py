@@ -33,7 +33,7 @@ class SqlAlchemyRepository(BaseAbstractRepository):
                 session.rollback()
                 return {"data": None, "error": error}
             session.flush()
-            schema = self.converting(instance)
+            schema = instance.to_schema()
             return {"data": schema, "error": None}
 
     def get_one(
@@ -56,7 +56,7 @@ class SqlAlchemyRepository(BaseAbstractRepository):
                 )
             except DatabaseError as error:
                 return {"data": None, "error": error}
-            schema = self.converting(instance) if instance else None
+            schema = instance.to_schema() if instance else None
             return {"data": schema, "error": None}
 
     def get_list(
@@ -80,7 +80,8 @@ class SqlAlchemyRepository(BaseAbstractRepository):
 
             except DatabaseError as error:
                 return {"data": None, "error": error}
-            return {"data": instances, "error": None}
+            inst = [ob.to_schema() for ob in instances]
+            return {"data": inst, "error": None}
 
     def is_exists(self, model_name, **filters) -> bool:
         """Проверка существует ли сущность."""
