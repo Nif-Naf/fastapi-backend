@@ -1,4 +1,5 @@
 import os
+from distutils.util import strtobool
 
 from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordBearer
@@ -21,16 +22,16 @@ VER_API_ONE = "/api/v1/"
 VER_API_TWO = "/api/v2/"
 
 # Auth settings.
-OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=VER_API_ONE + "auth/login")
+OAUTH2_SCHEME = OAuth2PasswordBearer(
+    tokenUrl=VER_API_ONE + "auth/login",
+    scheme_name="OAuth2CredentialsRequestForm",
+    description="Description Description",
+)
+TOKEN_TYPE = "Bearer"  # noqa
 PASSWORD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY")
-
 ALGORITHM = os.getenv("ALGORITHM")
-EXPIRATION = {
-    "days": int(os.getenv("ACCESS_TOKEN_EXPIRE_DAYS", 0)),
-    "hours": int(os.getenv("ACCESS_TOKEN_EXPIRE_HOURS", 1)),
-    "minutes": int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 0)),
-}
+EXPIRATION = int(os.getenv("ACCESS_TOKEN_EXPIRE_SECONDS"))
 
 # Session settings.
 SESSION_SETTINGS = {
@@ -46,10 +47,11 @@ password = os.getenv("DB_PASSWORD")
 host = os.getenv("DB_HOST")
 port = os.getenv("DB_PORT")
 name = os.getenv("DB_DB")
+echo = bool(strtobool(os.getenv("DB_ECHO")))
 
 MAIN_SETTINGS_DB = {
-    "url": f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}",
-    "echo": bool(os.getenv("DB_ECHO")),
+    "url": f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{name}",
+    "echo": echo,
     "pool_size": 10,
     "max_overflow": 10,
 }

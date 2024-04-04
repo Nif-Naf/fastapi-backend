@@ -19,11 +19,6 @@ class LogConfig(BaseModel):
             "()": "uvicorn.logging.DefaultFormatter",
             "fmt": "%(levelprefix)s %(message)s",
         },
-        "test": {
-            "()": "uvicorn.logging.DefaultFormatter",
-            "fmt": "%(levelprefix)s | Func: %(funcName)s | Line: %(lineno)d "
-            "| %(message)s",
-        },
     }
     handlers: dict = {
         "default": {
@@ -36,17 +31,13 @@ class LogConfig(BaseModel):
             "class": "logging.StreamHandler",
             "stream": "ext://sys.stderr",
         },
-        "test": {
-            "formatter": "test",
-            "class": "logging.StreamHandler",
-            "stream": "ext://sys.stderr",
-        },
     }
     loggers: dict = {
+        # For production.
         "information": {"handlers": ["information"], "level": "INFO"},
         "production": {"handlers": ["default"], "level": "INFO"},
+        # For development.
         "development": {"handlers": ["default"], "level": "DEBUG"},
-        "testing": {"handlers": ["test"], "level": "DEBUG"},
     }
 
     @classmethod

@@ -3,7 +3,11 @@ max-line-length = 79
 per-file-ignores =
     # S101 Use of assert detected
     tests/*.py:S101
+    # S101 Use of assert detected
+    fastapi_backend/validators/*.py:S101
 ignore =
+    # The module is shadowing a Python builtin module "token"
+    A005,
     # Missing return type annotation for protected function
     ANN202,
     B020,

@@ -10,14 +10,18 @@ python = "^3.10"
 uvicorn = "^0.27.1"
 fastapi = "^0.109.2"
 sqlalchemy = "^2.0.27"
-psycopg2-binary = "^2.9.9"
 python-dotenv = "^1.0.1"
 python-dateutil = "^2.8.2"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.9"
+pydantic = {extras = ["email"], version = "^2.6.4"}
+asyncpg = "^0.29.0"
 
 [tool.poetry.group.dev.dependencies]
+pytest = "^8.1.1"
+pytest-asyncio = "^0.23.5.post1"
+pytest-dotenv = "^0.5.2"
 pre-commit = "^3.3.3"
 isort = "^5.12.0"
 black = "^23.11.0"
@@ -42,6 +46,7 @@ flake8-mutable = "^1.2.0"
 flake8-string-format = "^0.3.0"
 flake8-todo = "^0.7"
 flake8-unused-arguments = "^0.0.13"
+httpx = "^0.27.0"
 
 [tool.isort]
 multi_line_output = 3
@@ -53,6 +58,35 @@ line_length = 79
 
 [tool.black]
 line-length = 79
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q -p no:warnings"
+asyncio_mode="auto"
+log_cli = 1
+log_cli_level = "INFO"
+log_format = "%(levelname)s | Func: %(funcName)s | Line: %(lineno)d | %(message)s"
+log_date_format = "%H:%M:%S"
+testpaths = [
+    "tests/unit",
+    "tests/integration",
+]
+env_files = [
+    ".test.env",
+]
+python_classes = [
+    "Test*",
+    "Testing*",
+]
+python_functions = [
+    "test_*",
+    "tests_*",
+]
+python_files = [
+    "test_*",
+    "tests_*",
+    "testing_*"
+]
 
 [build-system]
 requires = ["poetry-core"]

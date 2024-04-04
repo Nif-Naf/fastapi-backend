@@ -1,24 +1,38 @@
 import logging
+from abc import abstractmethod
 
+from fastapi_backend.repositories.user import UserRepository
 from fastapi_backend.schemas.response import ResponseSchema
-from fastapi_backend.services.base import BaseService
+from fastapi_backend.services.abc import AbstractService
+from fastapi_backend.typing.base import Email
 
 logger = logging.getLogger("development")
 
 
-class EmailService(BaseService):
+class AbstractEmailService(AbstractService):
     """Сервис для работы с электронной почтой."""
 
-    def check_email_user(self, email: str) -> ResponseSchema:
+    _repository = UserRepository
+
+    @classmethod
+    @abstractmethod
+    async def this_email_is_unique(
+        cls,
+        email: Email,
+    ) -> ResponseSchema:
         """Проверка на уникальность email в рамках БД."""
-        is_unique = self.orm.is_exists("UserModel", email=email)
-        data = {"unique": is_unique}
-        if is_unique:
-            return ResponseSchema(
-                data=data,
-                message="This address is unique in the database.",
-            )
+        raise NotImplementedError
+
+
+class EmailService(AbstractEmailService):
+    @classmethod
+    async def this_email_is_unique(
+        cls,
+        email: Email,
+    ) -> ResponseSchema:
+        is_uniq = await cls._repository.is_exists(email=email)
+        data = {"unique": is_uniq}
         return ResponseSchema(
             data=data,
-            message="This address is not unique in the database.",
+            message=f"This address {'is' if is_uniq else 'is not'} unique.",
         )

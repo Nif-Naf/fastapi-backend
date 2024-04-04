@@ -6,4 +6,6 @@ logger = logging.getLogger("development")
 
 
 class BaseSchema(BaseModel):
-    """Базовая схема."""
+    """Базовая абстрактная схема."""
+
+    ...

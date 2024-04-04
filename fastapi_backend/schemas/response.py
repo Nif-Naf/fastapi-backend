@@ -1,12 +1,10 @@
-import logging
+from typing import Any
 
-from fastapi_backend.schemas.base import BaseSchema
-
-logger = logging.getLogger("development")
+from fastapi_backend.schemas.abc import BaseSchema
 
 
 class ResponseSchema(BaseSchema):
     """Схема стандартного ответа."""
 
-    data: dict | None
-    message: str | None
+    data: Any | None
+    message: str

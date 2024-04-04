@@ -1,24 +1,18 @@
-import logging
+from datetime import datetime
 
-from fastapi_backend.schemas.base import BaseSchema
+from pydantic import EmailStr
 
-logger = logging.getLogger("development")
+from fastapi_backend.schemas.abc import BaseSchema
 
 
 class UserSchema(BaseSchema):
-    """Схема пользователя без первичного ключа.
-    Запись которой нет в БД.
-    """
-
-    name: str
-    username: str
-    email: str
-    password: str
-
-
-class UserWithPKScheme(UserSchema):
-    """Схема пользователя с первичным ключом.
-    Запись которой уже в БД.
-    """
+    """Схема пользователя."""
 
     id: int
+    first_name: str
+    second_name: str
+    email: EmailStr
+    # password: SecretStr
+    password: str
+    created_at: datetime
+    updated_at: datetime

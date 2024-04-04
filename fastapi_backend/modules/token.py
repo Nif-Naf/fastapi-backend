@@ -1,30 +1,50 @@
 import logging
+from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 
 from dateutil.relativedelta import relativedelta
 from jose import jwt
 
-from fastapi_backend.schemas.token import Token
+from fastapi_backend.typing.base import DataInJWTToken, Email, JWTToken
 from settings import ALGORITHM, EXPIRATION
 from settings import SECRET_KEY as SECRET
 
 logger = logging.getLogger("development")
 
 
-class TokenModule:
-    """Модуль для работы с паролем."""
+class AbstractTokenModule(ABC):
+    """Модуль для работы с токеном."""
 
     @classmethod
-    def create_token(cls, email: str) -> Token:
+    @abstractmethod
+    def create_token(cls, email: Email) -> JWTToken:
+        raise NotImplementedError
+
+    @staticmethod
+    @abstractmethod
+    def encode_token(data: DataInJWTToken) -> JWTToken:
+        raise NotImplementedError
+
+    @staticmethod
+    @abstractmethod
+    def decode_token(token: JWTToken) -> DataInJWTToken:
+        raise NotImplementedError
+
+
+class TokenModule(AbstractTokenModule):
+    @classmethod
+    def create_token(cls, email: Email) -> JWTToken:
         creation_date = datetime.now(timezone.utc)
-        expiration_date = creation_date + relativedelta(**EXPIRATION)
+        expiration_date = creation_date + relativedelta(seconds=EXPIRATION)
         token = cls.encode_token({"sub": email, "exp": expiration_date})
-        return Token(access_token=token, token_type="bearer")
+        return token
 
     @staticmethod
-    def encode_token(data) -> str:
-        return jwt.encode(claims=data, key=SECRET, algorithm=ALGORITHM)
+    def encode_token(data: DataInJWTToken) -> JWTToken:
+        token = jwt.encode(claims=data, key=SECRET, algorithm=ALGORITHM)
+        return JWTToken(token)
 
     @staticmethod
-    def decode_token(token: str) -> dict[str, str | datetime]:
-        return jwt.decode(token=token, key=SECRET, algorithms=ALGORITHM)
+    def decode_token(token: JWTToken) -> DataInJWTToken:
+        data = jwt.decode(token=token, key=SECRET, algorithms=ALGORITHM)
+        return data
