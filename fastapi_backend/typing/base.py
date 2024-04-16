@@ -30,3 +30,10 @@ DataInJWTToken = TypedDict(
         "exp": datetime,
     },
 )
+Message = TypedDict(
+    "Message",
+    {
+        "sender_id": int,
+        "body": str,
+    },
+)

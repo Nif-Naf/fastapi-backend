@@ -1,7 +1,9 @@
+import json
 import logging
 from abc import abstractmethod
 from typing import Sequence, TypedDict
 
+from pika.exchange_type import ExchangeType
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.exc import DatabaseError
@@ -10,6 +12,7 @@ from fastapi_backend.models.user import UserModel as Model
 from fastapi_backend.repositories.abc import AbstractRepository
 from fastapi_backend.schemas.auth import AuthorizationUserSchema
 from fastapi_backend.schemas.user import UserSchema as Schema
+from fastapi_backend.typing.base import Message
 
 logger = logging.getLogger("development")
 
@@ -37,6 +40,20 @@ SeveralReturnType = TypedDict(
 ##############################################################################
 class AbstractUserRepository(AbstractRepository):
     """Репозиторий для работы с пользователями в БД."""
+
+    queue: str
+
+    @classmethod
+    @abstractmethod
+    async def send_message(cls, message: Message) -> None:
+        """Отправить сообщение через очередь."""
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    async def receive_message(cls, user_id: int) -> dict:
+        """Получить сообщение через очередь."""
+        raise NotImplementedError
 
     @classmethod
     @abstractmethod
@@ -104,6 +121,47 @@ class AbstractUserRepository(AbstractRepository):
 # Realisation.
 ##############################################################################
 class UserRepository(AbstractUserRepository):
+    queue = "user_messages"
+    exchange = "user_exchange"
+    exchange_type = ExchangeType.direct
+
+    @classmethod
+    def send_message(cls, message: Message) -> None:
+        """Добавить сообщение в очередь."""
+        json_message = json.dumps(message)
+        with cls._queue_connector as channel:
+            channel.exchange_declare(cls.exchange, cls.exchange_type)
+            channel.basic_publish(cls.exchange, cls.queue, json_message)
+            logger.debug(
+                f"User: {message['sender_id']} send: {message['body']}"
+            )
+
+    @classmethod
+    def receive_message(cls, user_id: int) -> Message | None:
+        """Получить сообщение из очереди."""
+        message = None
+
+        def callback(ch, method, properties, body) -> None:  # noqa
+            nonlocal message
+            message = body
+
+        with cls._queue_connector as channel:
+            channel.exchange_declare(cls.exchange, cls.exchange_type)
+            user_queue = channel.queue_declare(queue=cls.queue)
+            channel.queue_bind(
+                exchange=cls.exchange,
+                queue=user_queue.method.queue,
+                routing_key=cls.queue,
+            )
+            channel.basic_consume(
+                queue=user_queue.method.queue,
+                on_message_callback=callback,
+                auto_ack=True,
+            )
+            channel.start_consuming()
+            logger.debug(f"User: {user_id} receive message")
+            return message
+
     @classmethod
     async def create(cls, schema) -> SingleReturnType:
         model = await cls.schema_to_model(schema)
@@ -135,7 +193,7 @@ class UserRepository(AbstractUserRepository):
             try:
                 result = await session.execute(query)
             except DatabaseError as error:
-                return {"data": tuple(None), "error": error.detail}
+                return {"data": tuple(...), "error": error.detail}
             users = result.scalars().all()
             return {"data": await cls.models_to_schemas(users), "error": None}
 

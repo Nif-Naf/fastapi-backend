@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from fastapi_backend.models.abc import BaseModel
-from settings import MAIN_SETTINGS_DB, SESSION_SETTINGS
+from settings import SESSION_SETTINGS, SETTINGS_DB
 
 logger = logging.getLogger("development")
 logger_information = logging.getLogger("information")
@@ -37,7 +37,7 @@ class AbstractDatabaseConnector(ABC):
 
 class DatabaseConnector(AbstractDatabaseConnector):
     def __init__(self):
-        self.engine = create_async_engine(**MAIN_SETTINGS_DB)
+        self.engine = create_async_engine(**SETTINGS_DB)
 
     @property
     def session_factory(self):

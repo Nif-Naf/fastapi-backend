@@ -4,6 +4,7 @@ from abc import ABC
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from fastapi_backend.connectors.database import DatabaseConnector
+from fastapi_backend.connectors.queue import QueueConnector
 
 logger = logging.getLogger("development")
 
@@ -14,6 +15,10 @@ class AbstractRepository(ABC):
     работы с ней.
     """
 
-    _connector = DatabaseConnector()
+    # Database.
+    __database_connector = DatabaseConnector()
     _session_factory: async_sessionmaker[AsyncSession]
-    _session_factory = _connector.session_factory
+    _session_factory = __database_connector.session_factory
+
+    # Queue.
+    _queue_connector = QueueConnector()

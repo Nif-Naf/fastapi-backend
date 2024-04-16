@@ -4,6 +4,7 @@ from distutils.util import strtobool
 from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+from pika.credentials import PlainCredentials
 
 # Check requirements .env file.
 env_conf = load_dotenv()
@@ -42,16 +43,27 @@ SESSION_SETTINGS = {
 
 # Database settings.
 # Main DB - Postgres.
-user = os.getenv("DB_USER")
-password = os.getenv("DB_PASSWORD")
-host = os.getenv("DB_HOST")
-port = os.getenv("DB_PORT")
-name = os.getenv("DB_DB")
+SBD = "postgresql+asyncpg"
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_DB")
 echo = bool(strtobool(os.getenv("DB_ECHO")))
 
-MAIN_SETTINGS_DB = {
-    "url": f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{name}",
+SETTINGS_DB = {
+    "url": f"{SBD}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
     "echo": echo,
     "pool_size": 10,
     "max_overflow": 10,
 }
+
+# Queue settings.
+QUEUE_HOST = os.getenv("QUEUE_HOST")
+QUEUE_PORT = int(os.getenv("QUEUE_PORT"))
+QUEUE_CONNECTION_PARAMS = {
+    "host": QUEUE_HOST,
+    "port": QUEUE_PORT,
+    "credentials": PlainCredentials(username="guest", password="guest"),
+}
+# PlainCredentials
